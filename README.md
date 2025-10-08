@@ -28,11 +28,6 @@
             margin: 20px 0;
             color: #007bff;
         }
-        #counter {
-            font-size: 1.2em;
-            color: #666;
-            margin: 10px 0;
-        }
         input[type="number"] {
             font-size: 1.5em;
             padding: 10px;
@@ -49,14 +44,10 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 5px;
+            margin: 10px;
         }
         button:hover {
             background-color: #218838;
-        }
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
         }
         #skor {
             font-size: 1.5em;
@@ -74,52 +65,81 @@
         .salah {
             color: red;
         }
-        #gameOver {
-            display: none;
-            font-size: 1.5em;
-            color: #007bff;
-            margin: 20px 0;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Game Perkalian</h1>
-        <p>Jawab soal perkalian berikut! Target: 10 soal.</p>
+        <p>Jawab soal perkalian berikut!</p>
         
         <div id="soal">Siap untuk soal pertama...</div>
-        <div id="counter">Soal 0/10</div>
-        <input type="number" id="jawaban" placeholder="Jawabanmu" disabled aria-label="Masukkan jawaban perkalian">
+        <input type="number" id="jawaban" placeholder="Jawabanmu" disabled>
         <br>
         <button id="mulaiBtn" onclick="mulaiGame()">Mulai Game</button>
-        <button id="submitBtn" onclick="cekJawaban()" disabled aria-label="Kirim jawaban">Submit Jawaban</button>
-        <button id="nextBtn" onclick="soalBaru()" disabled aria-label="Soal berikutnya">Soal Baru</button>
-        <button id="resetBtn" onclick="resetGame()" disabled aria-label="Mulai ulang game">Reset Game</button>
+        <button id="submitBtn" onclick="cekJawaban()" disabled>Submit Jawaban</button>
+        <button id="nextBtn" onclick="soalBaru()" disabled>Soal Baru</button>
         
         <div id="skor">Skor: 0</div>
         <div id="feedback"></div>
-        <div id="gameOver"></div>
     </div>
 
     <script>
         let angka1, angka2, jawabanBenar;
         let skor = 0;
-        let soalCount = 0;
-        let maxSoal = 10;
         let gameMulai = false;
 
         function mulaiGame() {
             gameMulai = true;
             skor = 0;
-            soalCount = 0;
             document.getElementById('skor').innerText = 'Skor: 0';
-            document.getElementById('counter').innerText = 'Soal 0/10';
             document.getElementById('mulaiBtn').disabled = true;
-            document.getElementById('resetBtn').disabled = false;
-            document.getElementById('submitBtn').disabled = true; // Disabled awal
+            document.getElementById('submitBtn').disabled = false;
             document.getElementById('nextBtn').disabled = true;
             document.getElementById('jawaban').disabled = false;
             document.getElementById('jawaban').value = '';
+            document.getElementById('feedback').innerText = '';
+            soalBaru();
+        }
+
+        function soalBaru() {
+            angka1 = Math.floor(Math.random() * 12) + 1; // Angka 1-12
+            angka2 = Math.floor(Math.random() * 12) + 1;
+            jawabanBenar = angka1 * angka2;
+            document.getElementById('soal').innerText = `${angka1} × ${angka2} = ?`;
+            document.getElementById('jawaban').focus();
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function cekJawaban() {
+            const jawabanUser = parseInt(document.getElementById('jawaban').value);
+            const feedback = document.getElementById('feedback');
+
+            if (jawabanUser === jawabanBenar) {
+                skor++;
+                feedback.innerText = 'Benar! Kerja bagus!';
+                feedback.className = 'benar';
+            } else {
+                feedback.innerText = `Salah! Jawaban benar adalah ${jawabanBenar}.`;
+                feedback.className = 'salah';
+            }
+
+            document.getElementById('skor').innerText = `Skor: ${skor}`;
+            document.getElementById('jawaban').value = '';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        // Izinkan Enter untuk submit
+        document.getElementById('jawaban').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                cekJawaban();
+            }
+        });
+    </script>
+</body>
+</html>
             document.getElementById('feedback').innerText = '';
             document.getElementById('gameOver').style.display = 'none';
             soalBaru();
