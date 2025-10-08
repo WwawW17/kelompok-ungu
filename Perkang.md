@@ -1,5 +1,3 @@
-# GamePerkalianSimple
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -138,6 +136,105 @@
             if (event.key === 'Enter') {
                 cekJawaban();
             }
+        });
+    </script>
+</body>
+</html>
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('gameOver').style.display = 'none';
+            soalBaru();
+        }
+
+        function soalBaru() {
+            if (soalCount >= maxSoal) {
+                akhiriGame();
+                return;
+            }
+            
+            angka1 = Math.floor(Math.random() * 12) + 1; // Angka 1-12
+            angka2 = Math.floor(Math.random() * 12) + 1;
+            jawabanBenar = angka1 * angka2;
+            soalCount++;
+            document.getElementById('soal').innerText = `${angka1} Ã— ${angka2} = ?`;
+            document.getElementById('counter').innerText = `Soal ${soalCount}/${maxSoal}`;
+            document.getElementById('jawaban').value = '';
+            document.getElementById('jawaban').focus();
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('submitBtn').disabled = true; // Disabled sampai input valid
+            document.getElementById('nextBtn').disabled = true;
+            
+            // Trigger input event untuk disable submit
+            document.getElementById('jawaban').dispatchEvent(new Event('input'));
+        }
+
+        function cekJawaban() {
+            const inputElement = document.getElementById('jawaban');
+            const jawabanUser  = parseInt(inputElement.value);
+            const feedback = document.getElementById('feedback');
+
+            if (isNaN(jawabanUser ) || inputElement.value === '') {
+                feedback.innerText = 'Masukkan jawaban angka yang valid!';
+                feedback.className = 'salah';
+                inputElement.focus();
+                return; // Hentikan eksekusi
+            }
+
+            if (jawabanUser  === jawabanBenar) {
+                skor++;
+                feedback.innerText = 'Benar! Kerja bagus!';
+                feedback.className = 'benar';
+            } else {
+                feedback.innerText = `Salah! Jawaban benar adalah ${jawabanBenar}.`;
+                feedback.className = 'salah';
+            }
+
+            document.getElementById('skor').innerText = `Skor: ${skor}`;
+            inputElement.value = '';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function akhiriGame() {
+            const gameOver = document.getElementById('gameOver');
+            const persentase = Math.round((skor / maxSoal) * 100);
+            gameOver.innerText = `Game Selesai! Skor akhir: ${skor}/${maxSoal} (${persentase}%).`;
+            gameOver.style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('jawaban').disabled = true;
+            document.getElementById('resetBtn').disabled = false;
+        }
+
+        function resetGame() {
+            gameMulai = false;
+            skor = 0;
+            soalCount = 0;
+            document.getElementById('soal').innerText = 'Siap untuk soal pertama...';
+            document.getElementById('counter').innerText = 'Soal 0/10';
+            document.getElementById('skor').innerText = 'Skor: 0';
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('mulaiBtn').disabled = false;
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('resetBtn').disabled = true;
+            document.getElementById('jawaban').disabled = true;
+            document.getElementById('jawaban').value = '';
+        }
+
+        // Event listener untuk Enter key
+        document.getElementById('jawaban').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter' && !document.getElementById('submitBtn').disabled) {
+                cekJawaban();
+            }
+        });
+
+        // Event listener untuk enable/disable submit berdasarkan input
+        document.getElementById('jawaban').addEventListener('input', function() {
+            const submitBtn = document.getElementById('submitBtn');
+            const value = this.value.trim();
+            const isValid = value !== '' && !isNaN(parseInt(value));
+            submitBtn.disabled = !isValid;
         });
     </script>
 </body>
